@@ -1,0 +1,363 @@
+from tkinter import* 
+from math import*
+
+caro=Tk()
+board = Canvas( caro, width = 630, height = 630,background="#f4bc42")
+board.pack(side = LEFT)
+
+for i in range(0,21):
+	board.create_line(i*30,30,i*30,600)
+	board.create_line(30,i*30,600,i*30)
+
+dem=0	
+stop=0
+
+x1=[]
+y1=[]
+x2=[]
+y2=[]
+Arrayx=[]
+Arrayy=[]
+
+def save_cross(x,y):
+	x1.append(x)
+	y1.append(y)
+	
+def save_circle(x,y):
+	x2.append(x)
+	y2.append(y)
+	
+def save(x,y):
+	Arrayx.append(x)
+	Arrayy.append(y)
+	
+def check(x,y):
+	for i in range (len(Arrayx)):
+		if x==Arrayx[i] and y==Arrayy[i]:
+			return 1
+	return 0
+	
+def check_cross(x,y):
+	for i in range(len(x1)):
+		if x==x1[i] and y==y1[i]:
+			return 1
+	return 0
+	
+def check_circle(x,y):
+	for i in range(len(x2)):
+		if x==x2[i] and y==y2[i]:
+			return 1
+	return 0
+
+def draw_cross(x,y):
+	board.create_line(x-10,y-10,x+10,y+10,fill="red",width=3)
+	board.create_line(x+10,y-10,x-10,y+10,fill="red",width=3)
+	
+def draw_circle(x,y):
+	board.create_oval(x-10,y-10,x+10,y+10,outline="green",width=3)
+
+def point(p):
+	a=int((p/10))
+	a=a*10
+	i=0
+	for i in range (0,15):
+		if ((a-i)%30 ==0):
+			a=a-i
+			break
+	if (i<15):
+		for i in range (0,15):
+			if ((a+i)%30 ==0):
+				a=a+i
+				break
+	return a			
+		
+def StraightWin(x,y,x1,y1,x2,y2): #Done
+#check circle or cross
+	def FirstAndLast(x,y,x1,y1,x2,y2):
+		def LastRight(x,y,x1,y1,x2,y2):
+			countLeft1=0
+			countRight1=0
+			block1=0
+			for i in range(len(x1)):
+				if y==y1[i]:
+					for j in range (1,5): # 1,2,3,4
+						if (x-j*30)==x1[i]: 
+							countLeft1+=1 #max->4
+					if (x+30)==x1[i]:
+						countRight1+=1 #Right==wrong
+			#block_head	
+			for k in range(len(x2)):
+				if y==y2[k]:
+					if (x+30)==x2[k] or (x-5*30)==x2[k]:
+						block1+=1
+			if block1<2 and countLeft1==4 and countRight1==0:
+				return 1
+			return 0		
+		def LastLeft(x,y,x1,y1,x2,y2):
+			countRight2=0
+			countLeft2=0
+			block2=0
+			for i in range(len(x1)):
+				if y==y1[i]:
+					for j in range (1,5):
+						if (x+j*30)==x1[i]: 
+							countRight2+=1					
+					if (x-30)==x1[i]:
+						countLeft2+=1 
+			#blockhead			
+			for i in range (len(x2)):
+				if y==y2[i]:
+					if (x-30)==x2[i] or (x+5*30)==x2[i]:
+						block2+=1
+			if block2<2 and countRight2==4 and countLeft1==0:
+				return 1
+			return 0	
+
+		if LastRight(x,y,x1,y1,x2,y2)==1 or LastLeft(x,y,x1,y1,x2,y2)==1:
+			return 1
+		return 0	
+	def Mid(x,y,x1,y1,x2,y2):
+		countmidleft=0
+		countmidright=0
+		blockmid=0
+		for i in range(len(x1)):
+			if y==y1[i]:
+				for j in range (1,3):# 1,2
+					if (x-j*30)==x1[i]: 
+						countmidleft+=1
+					if (x+j*30)==x1[i]:
+						countmidright+=1
+				if (x-3*30)==x1[i]:
+					countmidleft+=1
+				if (x+3*30)==x1[i]:
+					countmidright+=1
+		for k in range(len(x2)):
+			if y==y2[k]:
+				if (x+3*30)==x2[k] or (x-3*30)==x2[k]:
+					blockmid+=1
+		if countmidleft==2 and countmidright==2 and blockmid<2:
+			return 1
+		return 0	
+	def AnotherPlace(x,y,x1,y1,x2,y2):
+		#3 and 1
+		def moreLeft(x,y,x1,y1,x2,y2):
+			countLeft3 =0
+			countRight3=0
+			block3=0
+			sixth3=0
+			for i in range(len(x1)):
+				if y==y1[i]:
+					for j in range(1,4): #1,2,3
+						if (x-j*30)==x1[i]:
+							countLeft3+=1 #-->max=3
+					if (x+30)==x1[i]:
+						countRight3+=1
+					if (x-4*30)==x1[i]:
+						sixth3=1	
+			for k in range (len(x2)):				
+				if y==y2[k]:				
+					if (x+2*30)==x2[k] or (x-4*30)==x2[k]:
+						block3+=1
+			if countLeft3==3 and countRight3==1 and sixth3==0 and block3<2:
+				return 1
+			return 0	
+		def moreRight(x,y,x1,y1,x2,y2):	
+			countLeft4 =0
+			countRight4=0
+			block4=0
+			sixth4=0
+			for i in range(len(x1)):
+				if y==y1[i]:
+					for j in range(1,4): #1,2,3
+						if (x+j*30)==x1[i]:
+							countRight4+=1
+					if (x-30)==x1[i]:
+						countLeft4+=1
+					if (x+4*30)==x1[i]:
+						sixth4+=1
+			for k in range (len(x2)):
+				if y==y2[k]:
+					if (x-2*30)==x2[k] or (x+4*30)==x2[k]:
+						block4+=1
+			if countLeft4==1 and countRight4==3 and sixth4==0 and block4<2:
+				return 1
+			return 0
+		if moreLeft(x,y,x1,y1,x2,y2)==1 or moreRight(x,y,x1,y1,x2,y2)==1:
+			return 1
+		return 0	
+		
+	if AnotherPlace(x,y,x1,y1,x2,y2)==0 and Mid(x,y,x1,y1,x2,y2)==0 and Mid(x,y,x1,y1,x2,y2)==0:
+				return 0
+	return 1	
+		
+def Skew(x,y,x1,y1,x2,y2):
+	def UptoRight(x,y,x1,y1,x2,y2):
+		def UR_firstandfifth(x,y,x1,y1,x2,y2):
+			s_count1=0
+			for i in range (len(x1)):
+				for j in range(1,5): #1,2,3,4
+					n1=abs(y-y1[i])
+					if (n1/30)==j:
+						if (x+n1)==x1[i]:
+							s_count1+=1
+			if s_count1==4:
+				return 1
+			return 0	
+				
+		def UR_third(x,y,x1,y1,x2,y2):
+			s_count3left=0
+			s_count3right=0
+			for i in range (len(x1)):
+				for j in range(1,3):
+					n3=y-y1[i]
+					if abs(n3/30)==j:
+						if (n3>0):
+							if (x+abs(n3))==x1[i]:
+								s_count3right+=1
+						if (n3<0):
+							if (x-abs(n3))==x1[i]:
+								s_count3left+=1
+			if s_count3left==2 and s_count3right==2:
+				return 1
+			return 0	
+			
+		def UR_another(x,y,x1,y1,x2,y2):
+			def UR_second(x,y,x1,y1,x2,y2):
+				s_count2left=0
+				s_count2right=0
+				for i in range(len(x1)):
+					if y1[i]-y==30 and x-x1[i]==30: #1 left
+						s_count2left+=1
+					for j in range(1,4): #1,2,3 right
+						n2=(y-y1[i])   # y>y1[i]
+						if (n2/30)==j:
+							if (x+n2)==x1[i]:
+								s_count2right+=1
+				if s_count2left==1 and s_count2right==3:
+					return 1
+				return 0		
+			def UR_fourth(x,y,x1,y1,x2,y2):
+				s_count4left=0
+				s_count4right=0
+				for i in range(len(x1)):
+					if y-y1[i]==30 and x1[i]-x==30: #1 right
+						s_count4right+=1
+					for j in range(1,4): #1,2,3 left
+						n2=(y1[i]-y)   # y<y1[i]
+						if (n2/30)==j:
+							if (x-n2)==x1[i]:
+								s_count4left+=1
+				if s_count4right==1 and s_count4left==3:
+					return 1
+				return 0
+			if UR_second(x,y,x1,y1,x2,y2)==1 or UR_fourth(x,y,x1,y1,x2,y2)==1:
+				return 1
+			return 0	
+			
+		if UR_firstandfifth(x,y,x1,y1,x2,y2)==1 or UR_third(x,y,x1,y1,x2,y2)==1 or UR_another(x,y,x1,y1,x2,y2):
+			return 1
+		return 0	
+	
+	def UptoLeft(x,y,x1,y1,x2,y2):	
+		def UL_firstandfifth(x,y,x1,y1,x2,y2):
+			s_count1=0
+			for i in range (len(x1)):
+				for j in range(1,5): #1,2,3,4
+					n1=abs(y-y1[i])
+					if (n1/30)==j:
+						if (x-n1)==x1[i]:
+							s_count1+=1
+			if s_count1==4:
+				return 1
+			return 0	
+				
+		def UL_third(x,y,x1,y1,x2,y2):
+			s_count3left=0
+			s_count3right=0
+			for i in range (len(x1)):
+				for j in range(1,3):
+					n3=y-y1[i]
+					if abs(n3/30)==j:
+						if (n3>0):
+							if (x-abs(n3))==x1[i]:
+								s_count3left+=1
+						if (n3<0):
+							if (x+abs(n3))==x1[i]:
+								s_count3right+=1
+			if s_count3left==2 and s_count3right==2:
+				return 1
+			return 0	
+			
+		def UL_another(x,y,x1,y1,x2,y2):
+			def UL_second(x,y,x1,y1,x2,y2):
+				s_count2left=0
+				s_count2right=0
+				for i in range(len(x1)):
+					if y-y1[i]==30 and x-x1[i]==30: #1 upper left
+						s_count2left+=1
+					for j in range(1,4): #1,2,3 lower right
+						n2=(y1[1]-y)
+						if (n2/30)==j:
+							if (x+n2)==x1[i]:
+								s_count2right+=1
+				#print(s_count2right,s_count2left)			
+				if s_count2left==1 and s_count2right==3:
+					return 1
+				return 0		
+			def UL_fourth(x,y,x1,y1,x2,y2):
+				s_count4left=0
+				s_count4right=0
+				for i in range(len(x1)):
+					if y1[i]-y==30 and x1[i]-x==30: #1 lower right
+						s_count4right+=1
+					for j in range(1,4): #1,2,3 upper left
+						n4=(y-y1[i])  
+						if (n4/30)==j:
+							if (x-n4)==x1[i]:
+								s_count4left+=1
+				#print(s_count4right,s_count4left)				
+				if s_count4right==1 and s_count4left==3:
+					return 1
+				return 0
+			if UL_second(x,y,x1,y1,x2,y2)==1 or UL_fourth(x,y,x1,y1,x2,y2)==1:
+				return 1
+			return 0	
+			
+		if UL_firstandfifth(x,y,x1,y1,x2,y2)==1 or UL_third(x,y,x1,y1,x2,y2)==1 or UL_another(x,y,x1,y1,x2,y2):
+			return 1
+		return 0
+	
+	if UptoRight(x,y,x1,y1,x2,y2)==0 and UptoLeft(x,y,x1,y1,x2,y2)==0:
+		return 0
+	return 1
+	
+def callback(event):
+	global dem
+	global stop	
+	if stop==0 and check(point(event.x), point(event.y))==0 and check_cross (point(event.x),point(event.y))==0 and check_cross (point(event.x),point(event.y))==0 and point(event.x)!=0 and point(event.y)!=0 and point(event.x)!=630 and point(event.y)!=630:
+		#print (event.x,event.y)
+		if dem % 2==0:
+			draw_cross(point(event.x), point(event.y))
+			save_cross(point(event.x), point(event.y))
+		else:	
+			draw_circle(point(event.x), point(event.y))
+			save_circle(point(event.x), point(event.y))
+		dem+=1
+		print(dem)
+		print (point(event.x),point(event.y))
+		save (point(event.x),point(event.y))
+		if dem >=9:
+			if StraightWin(point(event.x),point(event.y),x1,y1,x2,y2)==1 or StraightWin(point(event.y),point(event.x),y1,x1,y2,x2)==1 or Skew(point(event.x),point(event.y),x1,y1,x2,y2)==1 or Skew(point(event.y),point(event.x),y1,x1,y2,x2)==1 :
+				if check_cross(point(event.x),point(event.y))==1:
+					print ("Player1 Win!!!")
+					stop=1
+			else:		
+				if StraightWin(point(event.x),point(event.y),x2,y2,x1,y1)==1 or StraightWin(point(event.y),point(event.x),y2,x2,y1,x1)==1 or Skew(point(event.x),point(event.y),x2,y2,x1,y1)==1 or Skew(point(event.y),point(event.x),y2,x2,y1,x1)==1: 
+					if check_circle(point(event.x),point(event.y))==1:
+						print ("Player2 Win!!!")
+						stop=1
+			
+board.bind("<Button-1>", callback)	
+
+caro.mainloop()
+
