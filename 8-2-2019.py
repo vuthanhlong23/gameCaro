@@ -4,7 +4,6 @@ from tkinter import Tk, Canvas, Frame, BOTH
 from tkinter import ttk
 import tkinter
 
-
 def info():
     six=tkinter.Tk()
     six.geometry('200x200+200+200')
@@ -12,12 +11,27 @@ def info():
     text.grid(column=10,row=10)
 
 def Setting():
-    new=tkinter.Tk()
-    new.geometry('400x400')
-    bar=Scale(new,orient=HORIZONTAL,from_=0,to =10,tickinterval=1,sliderlength=15,length=150)
-    bar.place(x=20,y=10)
+    global var
+    new=Tk()
+    new.geometry('300x300')
+    bar=Scale(new,orient=HORIZONTAL,from_=1,to =2,tickinterval=1,sliderlength=15,length=50)
+    bar.place(x=80,y=10)
+    text=Label(new,text="LEVELS")
+    text.place(x=35,y=30)
+    check1= Checkbutton(new,text="Full Screen",command=mget)
+    check1.place(x=35,y=70)
+    new.mainloop()
 
+def mget():
+    global var
+    if var==0:
+        var=1
+    else: var=0
+    
 two=Tk()
+
+var=0
+
 three=Canvas(two,width =900, height = 630,background="#f4bc42")
 three.pack()
 
@@ -29,6 +43,7 @@ red=Button(two,text="Group Informaton",font="none 10 bold",width=15,height=3,com
 red.place(x=400,y=430)
 Sett=Button(two,text="Settings",font="none 10 bold",width=15,height=3,command=Setting)
 Sett.place(x=400,y=510)
+
 two.mainloop()
 
 class Example(Frame):
@@ -42,7 +57,7 @@ class Example(Frame):
        self.pack(fill=BOTH, expand=1)
 
        canvas = Canvas(self)
-       canvas.create_rectangle(30, 10, 900, 800, outline="#00ffff", fill="#00ffff")
+       canvas.create_rectangle(0, 0, 900, 800, outline="#00ffff", fill="#00ffff")
        canvas.pack(fill=BOTH, expand=1)
        green=ttk.Button(canvas,text="Quit",command=lambda:[f() for f in[caro.destroy]])
        green.pack()
@@ -60,17 +75,34 @@ def reset():
     dem=0
     veBanCo()
 
-
-
 caro=Tk()
-board = Canvas( caro, width = 630, height = 630,background="#f4bc42")
+
+init_width= 630
+init_height=630
+m_height=600
+n_height=600
+m=21
+n=21
+if var==1:
+    init_width=1366
+    init_height=768
+    n=31
+    m=23
+    m_height=900
+    n_height=660
+    
+board = Canvas( caro, width = init_width, height = init_height,background="#f4bc42")
 board.pack(side = LEFT)
 
 ex = Example(caro)
 
-for i in range(0,21):
-	board.create_line(i*30,30,i*30,600)
-	board.create_line(30,i*30,600,i*30)
+def veBanCo():
+    for i in range(0,n):
+        board.create_line(i*30,30,i*30,n_height)
+    for i in range(0,m):
+        board.create_line(30,i*30,m_height,i*30)
+
+veBanCo()
 
 count=0	#turn
 stop=0
